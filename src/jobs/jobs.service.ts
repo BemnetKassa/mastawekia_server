@@ -13,7 +13,20 @@ export class JobsService {
       description: data.description,
       company: data.company,
       userId: userId,
-    },
-  });
-}
+      },
+   });
+  }
+
+  async getJobs() {
+    return this.prisma.jobPost.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getJob(id: string) {
+    return this.prisma.jobPost.findUnique({
+      where: { id },
+    });
+  }
+  
 }
