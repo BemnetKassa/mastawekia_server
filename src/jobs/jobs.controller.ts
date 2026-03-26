@@ -12,7 +12,8 @@ export class JobsController {
   @Roles('CLIENT')
   @Post()
   createJob(@Body() body, @Request() req) {
-    return this.jobsService.createJob(body, req.user.UserId);
+    console.log(req.user);
+    return this.jobsService.createJob(body, req.user.userId);
   }
 
   @Get()
