@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Check this path matches your structure, usually ../ or src/prisma
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +11,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string, role: any) {
+  async register(email: string, password: string, role: Role) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return this.prisma.user.create({
