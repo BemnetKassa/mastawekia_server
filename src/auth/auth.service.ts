@@ -10,13 +10,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string ) {
+  async register(email: string, password: string, role: any) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return this.prisma.user.create({
       data: {
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role
       },
     });
   }
