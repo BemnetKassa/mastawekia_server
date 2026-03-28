@@ -10,12 +10,13 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  jobPosts  JobPost[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  jobPosts     JobPost[]
+  applications Application[]
 }
 
 enum Role {
@@ -30,6 +31,18 @@ model JobPost {
   company     String
   createdAt   DateTime @default(now())
 
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  applications Application[]
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
   userId String
   user   User   @relation(fields: [userId], references: [id])
+
+  jobId String
+  job   JobPost @relation(fields: [jobId], references: [id])
 }
