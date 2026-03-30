@@ -27,5 +27,19 @@ export class ApplicationsService {
   });
 }
 
+async getApplicationsForClient(userId: string) {
+  return this.prisma.application.findMany({
+    where: {
+      job: {
+        userId: userId,
+      },
+    },
+    include: {
+      user: true,
+      job: true,
+    },
+  });
+}
+
 }
 

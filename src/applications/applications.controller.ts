@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/decorators/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Post, Param, Request } from '@nestjs/common';
+import { Post, Get, Param, Request } from '@nestjs/common';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -16,5 +16,14 @@ export class ApplicationsController {
 @Post(':jobId')
 apply(@Param('jobId') jobId: string, @Request() req) {
   return this.applicationsService.apply(req.user.userId, jobId);
+}
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('CLIENT')
+@Get()
+getApplications(@Request() req) {
+  return this.applicationsService.getApplicationsForClient(
+    req.user.userId,
+  );
 }
 }
