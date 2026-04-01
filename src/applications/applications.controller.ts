@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../common/decorators/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Post, Get, Param, Request } from '@nestjs/common';
+import { Post, Get, Param, Request, Patch, Body } from '@nestjs/common';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -25,5 +25,15 @@ getApplications(@Request() req) {
   return this.applicationsService.getApplicationsForClient(
     req.user.userId,
   );
+}
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('CLIENT')
+@Patch(':id')
+updateStatus(
+  @Param('id') id: string,
+  @Body() body,
+) {
+  return this.applicationsService.updateStatus(id, body.status);
 }
 }

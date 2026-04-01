@@ -41,9 +41,17 @@ model Application {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
 
+  status ApplicationStatus @default(PENDING)
+
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
   jobId String
   job   JobPost @relation(fields: [jobId], references: [id])
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

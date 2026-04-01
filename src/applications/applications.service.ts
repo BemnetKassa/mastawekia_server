@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Check this path matches your structure, usually ../ or src/prisma
 
+
 @Injectable()
 export class ApplicationsService {
  constructor(private prisma: PrismaService) {}
@@ -41,5 +42,11 @@ async getApplicationsForClient(userId: string) {
   });
 }
 
+async updateStatus(applicationId: string, status: "PENDING" | "ACCEPTED" | "REJECTED") {
+  return this.prisma.application.update({
+    where: { id: applicationId },
+    data: { status },
+  });
 }
 
+}
