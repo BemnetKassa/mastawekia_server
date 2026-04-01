@@ -20,12 +20,13 @@ export class ApplicationsService {
     throw new NotFoundException('Job not found');
   }
 
-  return this.prisma.application.create({
-    data: {
-      userId,
-      jobId,
-    },
-  });
+   try {
+    return await this.prisma.application.create({
+      data: { userId, jobId },
+    });
+  } catch (err) {
+    throw new Error("You already applied to this job");
+  }
 }
 
 async getApplicationsForClient(userId: string) {

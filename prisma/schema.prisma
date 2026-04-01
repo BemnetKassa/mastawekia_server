@@ -48,6 +48,8 @@ model Application {
 
   jobId String
   job   JobPost @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId]) // 🔥 THIS LINE
 }
 
 enum ApplicationStatus {
