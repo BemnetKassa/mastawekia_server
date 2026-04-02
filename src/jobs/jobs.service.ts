@@ -16,8 +16,22 @@ export class JobsService {
     });
   }
 
-  async getJobs(userId?: string) {
+  async getJobs(userId?: string, search?: string, company?: string) {
     return this.prisma.jobPost.findMany({
+      where: {
+        title: search
+          ? {
+              contains: search,
+              mode: 'insensitive',
+            }
+          : undefined,
+        company: company
+          ? {
+              contains: company,
+              mode: 'insensitive',
+            }
+          : undefined,
+      },
       include: userId
         ? {
             applications: {

@@ -6,6 +6,7 @@ import {
   UseGuards,
   Request,
   Param,
+  Query,
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { RolesGuard } from 'src/common/decorators/roles.guard';
@@ -27,10 +28,13 @@ export class JobsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('USER')
   @Get()
-  getJobs(@Request() req) {
-    console.log('USER:', req.user);
+  getJobs(
+    @Request() req,
+    @Query('search') search?: string,
+    @Query('company') company?: string,
+  ) {
     const userId = req.user?.userId; // optional
-    return this.jobsService.getJobs(userId);
+    return this.jobsService.getJobs(userId, search, company);
   }
 
   @Get(':id')
