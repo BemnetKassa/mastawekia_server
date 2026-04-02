@@ -18,13 +18,13 @@ export class JobsService {
 
   async getJobs(userId?: string) {
     return this.prisma.jobPost.findMany({
-      include: {
-        applications: userId
-          ? {
+      include: userId
+        ? {
+            applications: {
               where: { userId },
-            }
-          : false,
-      },
+            },
+          }
+        : {},
     });
   }
 
