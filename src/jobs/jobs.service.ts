@@ -27,8 +27,10 @@ export class JobsService {
           : undefined,
         company: company
           ? {
-              contains: company,
-              mode: 'insensitive',
+              name: {
+                contains: company,
+                mode: 'insensitive',
+              },
             }
           : undefined,
       },

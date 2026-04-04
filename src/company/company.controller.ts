@@ -19,4 +19,5 @@ export class CompanyController {
   @Get(':id')
   getCompany(@Param('id') id: string) {
     return this.companyService.getCompany(id);
+  }
 }
