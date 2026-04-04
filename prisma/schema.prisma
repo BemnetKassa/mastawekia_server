@@ -17,6 +17,7 @@ model User {
   createdAt    DateTime      @default(now())
   jobPosts     JobPost[]
   applications Application[]
+  companies    Company[]
 }
 
 enum Role {
@@ -28,8 +29,10 @@ model JobPost {
   id          String   @id @default(cuid())
   title       String
   description String
-  company     String
   createdAt   DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -56,4 +59,16 @@ enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  jobs JobPost[]
 }

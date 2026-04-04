@@ -10,8 +10,8 @@ export class JobsService {
       data: {
         title: data.title,
         description: data.description,
-        company: data.company,
         userId: userId,
+        companyId: data.companyId,
       },
     });
   }
