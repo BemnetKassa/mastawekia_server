@@ -16,6 +16,13 @@ export class CompanyController {
     return this.companyService.create(body, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Get('my')
+  getMyCompanies(@Request() req) {
+    return this.companyService.getMyCompanies(req.user.userId);
+  }
+
   @Get(':id')
   getCompany(@Param('id') id: string) {
     return this.companyService.getCompany(id);

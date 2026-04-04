@@ -23,4 +23,13 @@ export class CompanyService {
       },
     });
   }
+
+  async getMyCompanies(userId: string) {
+    return this.prisma.company.findMany({
+      where: { ownerId: userId },
+      include: {
+        jobs: true,
+      },
+    });
+  }
 }
