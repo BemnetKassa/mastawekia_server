@@ -25,8 +25,6 @@ export class JobsController {
     return this.jobsService.createJob(body, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('USER')
   @Get()
   getJobs(
     @Request() req,

@@ -47,6 +47,7 @@ export class JobsService {
   async getJob(id: string) {
     return this.prisma.jobPost.findUnique({
       where: { id },
+      include: { company: true },
     });
   }
 }
