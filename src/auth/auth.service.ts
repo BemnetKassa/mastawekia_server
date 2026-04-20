@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Check this path matches your structure, usually ../ or src/prisma
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,11 +19,27 @@ export class AuthService {
   async register(email: string, password: string, role: Role) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    if (await this.prisma.user.findUnique({ where: { email } })) {
+      throw new ConflictException('this email is already used');
+    } else if (password.length < 6) {
+      throw new BadRequestException(
+        'password must be at least 6 characters long',
+      );
+    } else if (
+      !/[a-zA-Z]/.test(password) ||
+      !/\d/.test(password) ||
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ) {
+      throw new BadRequestException(
+        'password must contain number, letter and special character',
+      );
+    }
+
     return this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        role
+        role,
       },
     });
   }
@@ -29,13 +50,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new Error('Invalid credentials');
+      throw new NotFoundException('Invalid credentials');
     }
 
     const token = this.jwtService.sign({
