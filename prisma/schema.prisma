@@ -18,6 +18,7 @@ model User {
   jobPosts     JobPost[]
   applications Application[]
   companies    Company[]
+  profile      profile[]
 }
 
 enum Role {
@@ -71,4 +72,13 @@ model Company {
   owner   User   @relation(fields: [ownerId], references: [id])
 
   jobs JobPost[]
+}
+
+model profile {
+  id        String   @id @default(cuid())
+  bio       String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
