@@ -18,7 +18,7 @@ model User {
   jobPosts     JobPost[]
   applications Application[]
   companies    Company[]
-  profile      profile[]
+  profile      profile?
 }
 
 enum Role {
@@ -77,8 +77,9 @@ model Company {
 model profile {
   id        String   @id @default(cuid())
   bio       String?
+  skill     String[]
   createdAt DateTime @default(now())
 
-  userId String
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 }
