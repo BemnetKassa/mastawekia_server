@@ -9,7 +9,7 @@ export class ProfileService {
     return this.prisma.profile.create({
       data: {
         bio: data.bio,
-        skill: data.skill,
+        skill: [data.skill],
         userId: userId,
       },
     });
