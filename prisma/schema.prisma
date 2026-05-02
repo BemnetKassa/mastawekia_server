@@ -77,7 +77,7 @@ model Company {
 model profile {
   id        String   @id @default(cuid())
   bio       String?
-  skill     String[]
+  skills    String[]
   createdAt DateTime @default(now())
 
   userId String @unique
