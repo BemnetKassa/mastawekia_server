@@ -12,6 +12,7 @@ export class ProfileController {
     private readonly profileService: ProfileService,
     private prisma: PrismaService,
   ) {}
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('USER')
   @Post()
@@ -22,11 +23,17 @@ export class ProfileController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('USER')
-  @Get(':id')
-  async getProfile(@Param('id') id: string) {
+  @Get()
+  async getMyProfile(@Request() req) {
+    const userId = req.user.userId;
+    console.log('USER ID FROM TOKEN:', userId);
+
     const profile = await this.prisma.profile.findUnique({
-      where: { id },
+      where: { userId },
     });
+
+    console.log('PROFILE FOUND:', profile);
+
     return profile;
   }
 }
