@@ -35,6 +35,13 @@ export class JobsController {
     return this.jobsService.getJobs(userId, search, company);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Get(':jobId/applications')
+  getJobApplications(@Param('jobId') jobId: string, @Request() req) {
+    return this.jobsService.getJobApplications(jobId, req.user.userId);
+  }
+
   @Get(':id')
   getJob(@Param('id') id: string) {
     return this.jobsService.getJob(id);

@@ -9,10 +9,6 @@ export class CreateApplicationDto {
   @IsNotEmpty()
   coverLetter: string;
 
-  @IsUrl()
-  @IsNotEmpty()
-  resumeUrl: string;
-
   @IsOptional()
   @IsUrl()
   portfolioUrl?: string;

@@ -70,12 +70,8 @@ async function main() {
       companyIds.set(companyName, company.id);
     }
 
-    await prisma.jobPost.deleteMany({
-      where: {
-        userId: owner.id,
-        title: { in: jobs.map((job) => job.title) },
-      },
-    });
+    await prisma.application.deleteMany({});
+    await prisma.jobPost.deleteMany({});
 
     await prisma.jobPost.createMany({
       data: jobs.map((job) => ({

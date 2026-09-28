@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -48,6 +52,35 @@ export class JobsService {
     return this.prisma.jobPost.findUnique({
       where: { id },
       include: { company: true },
+    });
+  }
+
+  async getJobApplications(jobId: string, clientUserId: string) {
+    const job = await this.prisma.jobPost.findUnique({
+      where: { id: jobId },
+      include: { company: true },
+    });
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    const isAuthorized =
+      job.userId === clientUserId || job.company.ownerId === clientUserId;
+
+    if (!isAuthorized) {
+      throw new ForbiddenException(
+        'Only the job owner or company owner can access this data.',
+      );
+    }
+
+    return this.prisma.application.findMany({
+      where: { jobId },
+      include: {
+        user: { include: { profile: true } },
+        job: { include: { company: true } },
+      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

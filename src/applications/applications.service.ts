@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ApplicationStatus, Prisma } from '@prisma/client';
+import { ApplicationStatus } from '@prisma/client';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -13,12 +13,19 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ApplicationsService {
   constructor(private prisma: PrismaService) {}
 
-  async createApplication(userId: string, dto: CreateApplicationDto) {
-    const { jobId, coverLetter, resumeUrl, portfolioUrl } = dto;
+  async createApplication(
+    userId: string,
+    dto: CreateApplicationDto,
+    resumeFile?: Express.Multer.File,
+  ) {
+    const { jobId, coverLetter, portfolioUrl } = dto;
+    const resolvedResumeUrl = resumeFile
+      ? `/uploads/resumes/${resumeFile.filename}`
+      : undefined;
 
-    if (!jobId || !coverLetter || !resumeUrl) {
+    if (!jobId || !coverLetter || !resolvedResumeUrl) {
       throw new BadRequestException(
-        'jobId, coverLetter, and resumeUrl are required.',
+        'jobId, coverLetter, and resume are required.',
       );
     }
 
@@ -36,10 +43,6 @@ export class ApplicationsService {
 
     if (!job) {
       throw new NotFoundException('Job not found');
-    }
-
-    if (!job.isOpen) {
-      throw new BadRequestException('This job is no longer open.');
     }
 
     const existingApplication = await this.prisma.application.findUnique({
@@ -60,7 +63,7 @@ export class ApplicationsService {
         userId,
         jobId,
         coverLetter,
-        resumeUrl,
+        resumeUrl: resolvedResumeUrl,
         portfolioUrl,
         status: ApplicationStatus.PENDING,
       },
@@ -315,13 +318,13 @@ export class ApplicationsService {
       throw new ForbiddenException('Only the applicant can withdraw this application.');
     }
 
-    if (
-      ![
-        ApplicationStatus.PENDING,
-        ApplicationStatus.REVIEWING,
-        ApplicationStatus.SHORTLISTED,
-      ].includes(application.status)
-    ) {
+    const isWithdrawable = [
+      ApplicationStatus.PENDING,
+      ApplicationStatus.REVIEWING,
+      ApplicationStatus.SHORTLISTED,
+    ].some((status) => status === application.status);
+
+    if (!isWithdrawable) {
       throw new BadRequestException(
         'Only applications in PENDING, REVIEWING, or SHORTLISTED can be withdrawn.',
       );

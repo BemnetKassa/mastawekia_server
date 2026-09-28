@@ -30,7 +30,6 @@ model JobPost {
   id          String   @id @default(cuid())
   title       String
   description String
-  isOpen      Boolean  @default(true)
   createdAt   DateTime @default(now())
 
   companyId String
