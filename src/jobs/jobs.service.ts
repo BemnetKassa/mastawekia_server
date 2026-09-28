@@ -20,9 +20,10 @@ export class JobsService {
     });
   }
 
-  async getJobs(userId?: string, search?: string, company?: string) {
+  async getJobs(userId: string, search?: string, company?: string) {
     return this.prisma.jobPost.findMany({
       where: {
+        userId,
         title: search
           ? {
               contains: search,
@@ -38,13 +39,10 @@ export class JobsService {
             }
           : undefined,
       },
-      include: userId
-        ? {
-            applications: {
-              where: { userId },
-            },
-          }
-        : {},
+      include: {
+        company: true,
+        applications: true,
+      },
     });
   }
 

@@ -95,7 +95,7 @@ export class ApplicationsService {
     const applications = await this.prisma.application.findMany({
       where: {
         job: {
-          OR: [{ userId }, { company: { ownerId: userId } }],
+          userId,
         },
       },
       include: {
@@ -109,10 +109,7 @@ export class ApplicationsService {
       id: application.id,
       status: application.status,
       createdAt: application.createdAt,
-      coverLetter: application.coverLetter,
-      resumeUrl: application.resumeUrl,
-      portfolioUrl: application.portfolioUrl,
-      applicant: {
+      user: {
         id: application.user.id,
         email: application.user.email,
         profile: application.user.profile,
@@ -120,7 +117,6 @@ export class ApplicationsService {
       job: {
         id: application.job.id,
         title: application.job.title,
-        company: application.job.company.name,
       },
     }));
   }

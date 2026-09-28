@@ -82,11 +82,25 @@ model Company {
 }
 
 model profile {
-  id        String   @id @default(cuid())
-  bio       String?
-  skills    String[]
-  createdAt DateTime @default(now())
+  id               String       @id @default(cuid())
+  headline         String       @default("")
+  bio              String       @default("")
+  skills           String[]
+  location         String       @default("")
+  phone            String       @default("")
+  experienceYears  Int          @default(0)
+  availability     Availability @default(OPEN_TO_WORK)
+  portfolioUrl     String       @default("")
+  linkedinUrl      String       @default("")
+  githubUrl        String       @default("")
+  createdAt        DateTime     @default(now())
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+}
+
+enum Availability {
+  OPEN_TO_WORK
+  ACTIVELY_LOOKING
+  NOT_LOOKING
 }
