@@ -1,10 +1,20 @@
-import { Controller } from '@nestjs/common';
-import { ApplicationsService } from './applications.service';
-import { UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/common/decorators/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { Post, Get, Param, Request, Patch, Body } from '@nestjs/common';
+import { RolesGuard } from 'src/common/decorators/roles.guard';
+import { ApplicationsService } from './applications.service';
+import { CreateApplicationDto } from './dto/create-application.dto';
+import { UpdateApplicationStatusDto } from './dto/update-application-status.dto';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -12,19 +22,11 @@ export class ApplicationsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('USER')
-  @Post(':jobId')
-  apply(@Param('jobId') jobId: string, @Request() req) {
-    return this.applicationsService.apply(req.user.userId, jobId);
+  @Post()
+  apply(@Body() dto: CreateApplicationDto, @Request() req) {
+    return this.applicationsService.createApplication(req.user.userId, dto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('CLIENT')
-  @Get()
-  getApplications(@Request() req) {
-    return this.applicationsService.getApplicationsForClient(req.user.userId);
-  }
-
-  // GET /applications/me
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('USER')
   @Get('me')
@@ -33,9 +35,41 @@ export class ApplicationsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('USER', 'CLIENT')
+  @Get(':id')
+  getOneApplication(@Param('id') id: string, @Request() req) {
+    return this.applicationsService.getApplicationById(id, req.user.userId, req.user.role);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('CLIENT')
-  @Patch(':id')
-  updateStatus(@Param('id') id: string, @Body() body) {
-    return this.applicationsService.updateStatus(id, body.status);
+  @Get('job/:jobId')
+  getApplicationsForJob(@Param('jobId') jobId: string, @Request() req) {
+    return this.applicationsService.getApplicationsForJob(jobId, req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateApplicationStatusDto,
+    @Request() req,
+  ) {
+    return this.applicationsService.updateStatus(id, req.user.userId, dto.status);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('USER')
+  @Patch(':id/withdraw')
+  withdrawApplication(@Param('id') id: string, @Request() req) {
+    return this.applicationsService.withdrawApplication(id, req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Get()
+  getAllClientApplications(@Request() req) {
+    return this.applicationsService.getApplicationsForClient(req.user.userId);
   }
 }

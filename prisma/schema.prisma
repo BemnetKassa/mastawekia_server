@@ -30,6 +30,7 @@ model JobPost {
   id          String   @id @default(cuid())
   title       String
   description String
+  isOpen      Boolean  @default(true)
   createdAt   DateTime @default(now())
 
   companyId String
@@ -42,8 +43,12 @@ model JobPost {
 }
 
 model Application {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  coverLetter  String
+  resumeUrl    String
+  portfolioUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   status ApplicationStatus @default(PENDING)
 
@@ -58,8 +63,11 @@ model Application {
 
 enum ApplicationStatus {
   PENDING
+  REVIEWING
+  SHORTLISTED
   ACCEPTED
   REJECTED
+  WITHDRAWN
 }
 
 model Company {
