@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   UseGuards,
   Request,
   Param,
@@ -12,6 +13,7 @@ import { JobsService } from './jobs.service';
 import { RolesGuard } from 'src/common/decorators/roles.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { UpdatePublicationDto } from './dto/update-publication.dto';
 
 @Controller('jobs')
 export class JobsController {
@@ -47,8 +49,24 @@ export class JobsController {
     return this.jobsService.getJobApplications(jobId, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Patch(':jobId/publish')
+  updatePublication(
+    @Param('jobId') jobId: string,
+    @Body() body: UpdatePublicationDto,
+    @Request() req,
+  ) {
+    return this.jobsService.updatePublication(
+      jobId,
+      body.isPublished,
+      req.user.userId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  getJob(@Param('id') id: string) {
-    return this.jobsService.getJob(id);
+  getJob(@Param('id') id: string, @Request() req) {
+    return this.jobsService.getJob(id, req.user.userId, req.user.role);
   }
 }

@@ -41,6 +41,7 @@ model JobPost {
   title       String
   description String
   createdAt   DateTime @default(now())
+  isPublished Boolean  @default(true)
   moderationStatus ModerationStatus @default(ACTIVE)
   moderatedById String?
   moderatedAt DateTime?
