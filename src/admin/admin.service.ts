@@ -212,21 +212,38 @@ export class AdminService {
     status: ModerationStatus,
     adminId: string,
   ) {
-    const delegate = this.prisma[model];
-    const record = await delegate.findUnique({ where: { id } });
-    if (!record) {
-      throw new NotFoundException(`${model} not found`);
+    const data = {
+      moderationStatus: status,
+      moderatedById: adminId,
+      moderatedAt: new Date(),
+    };
+
+    switch (model) {
+      case 'jobPost': {
+        const record = await this.prisma.jobPost.findUnique({ where: { id } });
+        if (!record) throw new NotFoundException('jobPost not found');
+        const updated = await this.prisma.jobPost.update({ where: { id }, data });
+        return { ...updated, status: updated.moderationStatus };
+      }
+      case 'application': {
+        const record = await this.prisma.application.findUnique({ where: { id } });
+        if (!record) throw new NotFoundException('application not found');
+        const updated = await this.prisma.application.update({ where: { id }, data });
+        return { ...updated, status: updated.moderationStatus };
+      }
+      case 'user': {
+        const record = await this.prisma.user.findUnique({ where: { id } });
+        if (!record) throw new NotFoundException('user not found');
+        const updated = await this.prisma.user.update({ where: { id }, data });
+        const { password: _password, ...safeUser } = updated;
+        return { ...safeUser, status: updated.moderationStatus };
+      }
+      case 'company': {
+        const record = await this.prisma.company.findUnique({ where: { id } });
+        if (!record) throw new NotFoundException('company not found');
+        const updated = await this.prisma.company.update({ where: { id }, data });
+        return { ...updated, status: updated.moderationStatus };
+      }
     }
-
-    const updated = await delegate.update({
-      where: { id },
-      data: {
-        moderationStatus: status,
-        moderatedById: adminId,
-        moderatedAt: new Date(),
-      },
-    });
-
-    return { ...updated, status: updated.moderationStatus };
   }
 }

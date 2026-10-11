@@ -17,6 +17,10 @@ export class AuthService {
   ) {}
 
   async register(email: string, password: string, role: Role) {
+    if (role === Role.ADMIN) {
+      throw new BadRequestException('admin accounts cannot be registered publicly');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (await this.prisma.user.findUnique({ where: { email } })) {
