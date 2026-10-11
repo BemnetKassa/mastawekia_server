@@ -15,6 +15,9 @@ model User {
   password     String
   role         Role          @default(USER)
   createdAt    DateTime      @default(now())
+  moderationStatus ModerationStatus @default(ACTIVE)
+  moderatedById String?
+  moderatedAt DateTime?
   jobPosts     JobPost[]
   applications Application[]
   companies    Company[]
@@ -24,6 +27,13 @@ model User {
 enum Role {
   USER
   CLIENT
+  ADMIN
+}
+
+enum ModerationStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
 }
 
 model JobPost {
@@ -31,6 +41,9 @@ model JobPost {
   title       String
   description String
   createdAt   DateTime @default(now())
+  moderationStatus ModerationStatus @default(ACTIVE)
+  moderatedById String?
+  moderatedAt DateTime?
 
   companyId String
   company   Company @relation(fields: [companyId], references: [id])
@@ -50,6 +63,9 @@ model Application {
   updatedAt    DateTime @updatedAt
 
   status ApplicationStatus @default(PENDING)
+  moderationStatus ModerationStatus @default(ACTIVE)
+  moderatedById String?
+  moderatedAt DateTime?
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -74,6 +90,9 @@ model Company {
   name        String
   description String?
   createdAt   DateTime @default(now())
+  moderationStatus ModerationStatus @default(ACTIVE)
+  moderatedById String?
+  moderatedAt DateTime?
 
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [id])

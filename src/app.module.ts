@@ -10,12 +10,13 @@ import { CompanyModule } from './company/company.module';
 import { ProfileController } from './profile/profile.controller';
 import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule, 
-    AuthModule, JobsModule, ApplicationsModule, CompanyModule, ProfileModule
+    AuthModule, JobsModule, ApplicationsModule, CompanyModule, ProfileModule, AdminModule
   ],
   controllers: [AppController, ProfileController],
   providers: [AppService, ProfileService],
