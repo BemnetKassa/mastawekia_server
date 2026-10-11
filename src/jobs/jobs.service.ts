@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -20,10 +21,16 @@ export class JobsService {
     });
   }
 
-  async getJobs(userId: string, search?: string, company?: string) {
-    return this.prisma.jobPost.findMany({
+  async getJobs(
+    userId: string,
+    role: Role,
+    search?: string,
+    company?: string,
+  ) {
+    const jobs = await this.prisma.jobPost.findMany({
       where: {
-        userId,
+        // Users browse all available jobs; clients only see jobs they created.
+        userId: role === Role.CLIENT ? userId : undefined,
         title: search
           ? {
               contains: search,
@@ -41,9 +48,16 @@ export class JobsService {
       },
       include: {
         company: true,
-        applications: true,
+        ...(role === Role.CLIENT ? { applications: true } : {}),
       },
     });
+
+    // Keep `company` renderable for clients while retaining the full relation.
+    return jobs.map(({ company: companyDetails, ...job }) => ({
+      ...job,
+      company: companyDetails.name,
+      companyDetails,
+    }));
   }
 
   async getJob(id: string) {

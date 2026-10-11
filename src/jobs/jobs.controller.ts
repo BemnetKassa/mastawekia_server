@@ -25,15 +25,19 @@ export class JobsController {
     return this.jobsService.createJob(body, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('CLIENT')
+  @UseGuards(JwtAuthGuard)
   @Get()
   getJobs(
     @Request() req,
     @Query('search') search?: string,
     @Query('company') company?: string,
   ) {
-    return this.jobsService.getJobs(req.user.userId, search, company);
+    return this.jobsService.getJobs(
+      req.user.userId,
+      req.user.role,
+      search,
+      company,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
