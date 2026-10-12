@@ -18,8 +18,12 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://localhost:3001',
-    credentials: true,
+    origin: [
+               'http://localhost:3001',
+               'https://mastawekia-com.vercel.app'
+            ],  
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 3000, async () => {
