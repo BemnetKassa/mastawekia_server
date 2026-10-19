@@ -1,9 +1,18 @@
-import { Controller } from '@nestjs/common';
-import { Body, Post, Request, UseGuards, Get, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/common/decorators/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Controller('company')
 export class CompanyController {
@@ -21,6 +30,21 @@ export class CompanyController {
   @Get('my')
   getMyCompanies(@Request() req) {
     return this.companyService.getMyCompanies(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('CLIENT')
+  @Patch(':companyId')
+  updateCompany(
+    @Param('companyId') companyId: string,
+    @Body() body: UpdateCompanyDto,
+    @Request() req,
+  ) {
+    return this.companyService.updateCompany(
+      companyId,
+      body,
+      req.user.userId,
+    );
   }
 
   @Get(':id')
